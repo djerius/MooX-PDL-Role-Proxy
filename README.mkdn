@@ -1,0 +1,222 @@
+# NAME
+
+MooX::PDL::Role::Proxy - treat a container of piddles as if it were a piddle
+
+# VERSION
+
+version 0.01
+
+# SYNOPSIS
+
+    package My::Class;
+
+    use Moo;
+    use MooX::PDL::Role::Proxy;
+
+    use PDL;
+
+    has p1 => (
+        is      => 'rw',
+        default => sub { sequence( 10 ) },
+        piddle  => 1
+    );
+
+    has p2 => (
+        is      => 'rw',
+        default => sub { sequence( 10 ) + 1 },
+        piddle  => 1
+    );
+
+
+    sub clone_with_piddles {
+        my ( $self, %piddles ) = @_;
+
+        $self->new->_set_attr( %piddles );
+    }
+
+
+    my $obj = My::Class->new;
+
+    # clone $obj and filter piddles.
+    my $new = $obj->where( $obj->p1 > 5 );
+
+# DESCRIPTION
+
+**MooX::PDL::Role::Proxy** is a [Moo::Role](https://metacpan.org/pod/Moo::Role) which turns its
+consumer into a proxy object for some of its attributes, which are
+assumed to be **PDL** objects (or other proxy objects). A subset of
+**PDL** methods applied to the proxy object are applied to the selected
+attributes. (See [PDL::QuckStart](https://metacpan.org/pod/PDL::QuckStart) for more information on **PDL** and
+its objects (piddles)).
+
+As an example, consider an object representing a set of detected
+events (think physics, not computing), which contains metadata
+describing the events as well as piddles representing event position,
+energy, and arrival time.  The structure might look like this:
+
+    {
+        metadata => \%metadata,
+        time   => $time,         # piddle
+        x      => $x,            # piddle
+        y      => $y,            # piddle
+        energy => $energy        # piddle
+    }
+
+To filter the events on energy would traditionally be performed
+explicitly on each element in the structure, e.g.
+
+    my $mask = which( $obj->{energy} > 20 );
+
+    my $copy = {};
+    $copy->{time}   = $obj->{time}->where( $mask );
+    $copy->{x}      = $obj->{x}->where( $mask );
+    $copy->{y}      = $obj->{y}->where( $mask );
+    $copy->{energy} = $obj->{energy}->where( $mask );
+
+Or, more succinctly,
+
+    $new->{$_} = $obj->{$_}->where( $mask ) for qw( time x y energy );
+
+With **MooX::PDL::Role::Proxy** this turns into
+
+    my $copy = $obj->where( $mask );
+
+Or, if the results should be stored in the same object,
+
+    $obj->inplace->where( $mask );
+
+## Usage and Class requirements
+
+Each attribute to be operated on by the common `PDL`-like
+operators should be given a `piddle` option, e.g.
+
+    has p1 => (
+        is      => 'rw',
+        default => sub { sequence( 10 ) },
+        piddle  => 1,
+    );
+
+(Treat the option value as an identifier for the group of piddles
+which should be operated on, rather than as a boolean).
+
+To support non-inplace operations, the class must provide a
+`clone_with_piddles` method with the following signature:
+
+    sub clone_with_piddles ( $self, %piddles )
+
+It should clone `$self` and assign the values in `%piddles`
+to the attributes named by its keys.  To assist with the latter
+operation, see the provided ["\_set\_attrs"](#_set_attrs) method.
+
+To support inplace operations, attributes tagged with the `piddle`
+option must have write accessors.  They may be public or private.
+
+# METHODS
+
+## \_piddles
+
+    @piddle_names = $self->_piddles;
+
+This returns a list of the names of the object's attributes with
+a `piddle` tag set.
+
+## \_apply\_to\_tagged\_attrs
+
+    $self->_apply_to_tagged_attrs( \&sub );
+
+Execute the passed subroutine on all of the attributes tagged with the
+`piddle` option. The subroutine will be invoked as
+
+    sub->( $attribute, $inplace )
+
+where `$inplace` will be true if the operation is to take place inplace.
+
+The subroutine should return the piddle to be stored.
+
+## inplace
+
+    $self->inplace
+
+Indicate that the next _inplace aware_ operation should be done inplace
+
+## is\_inplace
+
+    $bool = $self->is_inplace;
+
+Test if the next _inplace aware_ operation should  be done inplace
+
+## copy
+
+    $new = $self->copy;
+
+Create a copy of the object and its piddles.  It is exactly equivalent to
+
+    $self->clone_with_piddles( map { $_ => $self->$_->copy } @{ $self->_piddles } );
+
+## sever
+
+    $self->sever;
+
+Call ["sever" in PDL::Core](https://metacpan.org/pod/PDL::Core#sever) on tagged attributes.  This is done inplace.
+
+## index
+
+    $new = $self->index( PIDDLE );
+
+Call ["index" in PDL::Slices](https://metacpan.org/pod/PDL::Slices#index) on tagged attributes.  This is inplace aware.
+
+## at
+
+    $obj = $self->at( @indices );
+
+Returns a simple object containing the results of running
+["index" in PDL::Core](https://metacpan.org/pod/PDL::Core#index) on tagged attributes.  The object's attributes are
+named after the tagged attributes.
+
+## where
+
+    $obj = $self->where( $mask );
+
+Apply ["where" in PDL::Primitive](https://metacpan.org/pod/PDL::Primitive#where) to the tagged attributes.  It is inplace aware.
+
+## \_set\_attr
+
+    $self->_set_attr( %attr )
+
+Set the object's attributes to the values in the `%attr` hash.
+
+Returns `$self`.
+
+# LIMITATIONS
+
+There are significant limits to this encapsulation.
+
+- The piddles operated on must be similar enough in structure so that
+the ganged operations make sense (and are valid!).
+- There is (currently) no way to indicate that there are different sets
+of piddles contained within the object.
+- The object must be able to be cloned relatively easily, so that
+non-inplace operations can create copies of the original object.
+
+# BUGS
+
+Please report any bugs or feature requests on the bugtracker website
+[https://rt.cpan.org/Public/Dist/Display.html?Name=MooX-PDL-Role-Proxy](https://rt.cpan.org/Public/Dist/Display.html?Name=MooX-PDL-Role-Proxy) or
+by email to
+[bug-MooX-PDL-Role-Proxy@rt.cpan.org](mailto:bug-MooX-PDL-Role-Proxy@rt.cpan.org).
+
+When submitting a bug or request, please include a test-file or a
+patch to an existing test-file that illustrates the bug or desired
+feature.
+
+# AUTHOR
+
+Diab Jerius <djerius@cpan.org>
+
+# COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2018 by Smithsonian Astrophysical Observatory.
+
+This is free software, licensed under:
+
+    The GNU General Public License, Version 3, June 2007
