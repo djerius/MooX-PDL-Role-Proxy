@@ -5,7 +5,7 @@ package MooX::PDL::Role::Proxy;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Types::Standard -types;
 
