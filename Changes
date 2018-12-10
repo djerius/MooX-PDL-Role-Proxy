@@ -2,6 +2,12 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.02      2018-12-09 00:43:39-05:00 America/New_York (TRIAL RELEASE)
+
+  [ BUILD FIX ]
+
+    * specify required version of MooX::TaggedAttributes
+
 0.01      2018-12-09 00:43:39-05:00 America/New_York
 
 * First release upon an unsuspecting world.
