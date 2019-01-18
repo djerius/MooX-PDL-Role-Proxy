@@ -34,7 +34,6 @@ on 'configure' => sub {
 
 on 'develop' => sub {
   requires "Dist::Zilla" => "5";
-  requires "Dist::Zilla::Plugin::AutoMetaResources" => "0";
   requires "Dist::Zilla::Plugin::AutoPrereqs" => "0";
   requires "Dist::Zilla::Plugin::BumpVersionAfterRelease" => "0";
   requires "Dist::Zilla::Plugin::CPANFile" => "0";
@@ -48,6 +47,7 @@ on 'develop' => sub {
   requires "Dist::Zilla::Plugin::MetaJSON" => "0";
   requires "Dist::Zilla::Plugin::MetaNoIndex" => "0";
   requires "Dist::Zilla::Plugin::MetaProvides::Package" => "0";
+  requires "Dist::Zilla::Plugin::MetaResources" => "0";
   requires "Dist::Zilla::Plugin::ModuleBuildTiny" => "0";
   requires "Dist::Zilla::Plugin::NextRelease" => "0";
   requires "Dist::Zilla::Plugin::PodCoverageTests" => "0";
