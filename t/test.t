@@ -12,12 +12,11 @@ use Scalar::Util qw[ refaddr ];
 
 sub test_obj {
 
-    my $o = My::Class->new;
-    my $tmp;
-    ( $tmp = $o->p1 ) .= PDL->sequence( 5 );
-    ( $tmp = $o->p2 ) .= $o->p1 + 1;
+    My::Class->new(
+        p1 => PDL->sequence( 5 ),
+        p2 => PDL->sequence( 5 ) + 1,
+    );
 
-    return $o;
 }
 
 sub test_inplace {
