@@ -2,6 +2,7 @@ package MooX::PDL::Role::Proxy;
 
 # ABSTRACT: treat a container of piddles as if it were a piddle
 
+use 5.010;
 use strict;
 use warnings;
 
