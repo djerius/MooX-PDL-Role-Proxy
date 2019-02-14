@@ -1,3 +1,4 @@
+requires "Carp" => "0";
 requires "Hash::Wrap" => "0";
 requires "Lexical::Accessor" => "0";
 requires "Moo" => "0";
@@ -13,14 +14,14 @@ requires "strict" => "0";
 requires "warnings" => "0";
 
 on 'test' => sub {
-  requires "Exporter" => "0";
   requires "ExtUtils::MakeMaker" => "0";
   requires "File::Spec" => "0";
   requires "IO::Handle" => "0";
   requires "IPC::Open3" => "0";
   requires "Moo" => "0";
   requires "PDL::Lite" => "0";
-  requires "Test2::API" => "0";
+  requires "Role::Tiny" => "0";
+  requires "Role::Tiny::With" => "0";
   requires "Test2::Tools::PDL" => "0";
   requires "Test2::V0" => "0";
   requires "Test::Lib" => "0";

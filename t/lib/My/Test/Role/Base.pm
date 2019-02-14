@@ -1,13 +1,39 @@
-#! perl
+package My::Test::Role::Base;
 
-use Test2::API;
-use Scalar::Util qw[ refaddr ];
+use Test2::V0;
+use Test2::Tools::PDL;
+use Scalar::Util qw( refaddr );
 
-use Exporter 'import';
+use Role::Tiny;
 
-our @EXPORT = qw( test_inplace_flat_obj test_not_inplace_flat_obj);
+use namespace::clean;
+
+requires qw(
+  build_expected
+  test_inplace
+  test_not_inplace
+);
+
+sub test {
+    my $class = shift;
+
+    my $context = context();
+    my ( $label, $sub, %expected ) = @_;
+
+    my $expected = $class->build_expected( %expected );
+
+
+    subtest $label => sub {
+        $class->test_inplace( $sub, $expected );
+        $class->test_not_inplace( $sub, $expected );
+    };
+
+    $context->release;
+}
 
 sub test_inplace_flat_obj {
+
+    my $class = shift;
 
     my ( $orig, $new, $expected ) = @_;
 
@@ -35,6 +61,8 @@ sub test_inplace_flat_obj {
 
 sub test_not_inplace_flat_obj {
 
+    my $class = shift;
+
     my ( $orig, $new, $expected, %data ) = @_;
 
     my $context = context();
@@ -58,7 +86,5 @@ sub test_not_inplace_flat_obj {
 
     $context->release;
 }
-
-
 
 1;

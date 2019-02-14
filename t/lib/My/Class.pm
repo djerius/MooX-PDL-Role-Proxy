@@ -24,5 +24,4 @@ sub clone_with_piddles {
     $self->new->_set_attr( %attr );
 }
 
-
 1;
