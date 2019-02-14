@@ -15,6 +15,7 @@ use Hash::Wrap;
 use Scalar::Util ();
 
 use Moo::Role;
+use Lexical::Accessor;
 
 use namespace::clean;
 
@@ -41,18 +42,19 @@ has _piddles => (
     },
 );
 
-has _set_attr_subs => (
+lexical_has attr_subs => (
     is       => 'ro',
     isa      => HashRef,
-    init_arg => undef,
+    reader   => \( my $attr_subs ),
     default  => sub { {} },
 );
 
 
-has _piddle_op_inplace => (
-    is       => 'rwp',
-    init_arg => undef,
-    clearer  => 1,
+lexical_has 'is_inplace' => (
+    is       => 'rw',
+    clearer  => \( my $clear_inplace ),
+    reader   => \( my $is_inplace ),
+    writer   => \( my $set_inplace ),
     default  => 0
 );
 
@@ -77,15 +79,15 @@ Returns C<$self> if applied in-place, or a new object if not.
 sub _apply_to_tagged_attrs {
     my ( $self, $action ) = @_;
 
-    my $inplace = $self->_piddle_op_inplace;
+    my $inplace = $self->$is_inplace;
 
     my %attr = map {
         my $field = $_;
         $field => $action->( $self->$field, $inplace );
     } @{ $self->_piddles };
 
-    if ( $self->_piddle_op_inplace ) {
-        $self->_clear_piddle_op_inplace;
+    if ( $self->$is_inplace ) {
+        $self->$clear_inplace;
         $self->_set_attr( %attr );
         return $self;
     }
@@ -103,9 +105,8 @@ Indicate that the next I<inplace aware> operation should be done inplace
 =cut
 
 sub inplace {
-    my $self = shift;
-    $self->_set__piddle_op_inplace( 1 );
-    return $self;
+    $_[0]->$set_inplace( 1 );
+    $_[0];
 }
 
 =method is_inplace
@@ -116,7 +117,7 @@ Test if the next I<inplace aware> operation should  be done inplace
 
 =cut
 
-sub is_inplace { !! $_[0]->__piddle_op_inplace }
+sub is_inplace { goto &$is_inplace }
 
 =method copy
 
@@ -202,6 +203,8 @@ sub where {
     return $self->_apply_to_tagged_attrs( sub { $_[0]->where( $where ) } );
 }
 
+
+
 =method _set_attr
 
    $self->_set_attr( %attr )
@@ -215,7 +218,7 @@ Returns C<$self>.
 
 sub _set_attr {
     my ( $self, %attr ) = @_;
-    my $subs = $self->_set_attr_subs;
+    my $subs = $self->$attr_subs;
 
     for my $key ( keys %attr ) {
         my $sub = $subs->{$key};

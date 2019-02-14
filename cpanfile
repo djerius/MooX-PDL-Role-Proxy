@@ -1,4 +1,5 @@
 requires "Hash::Wrap" => "0";
+requires "Lexical::Accessor" => "0";
 requires "Moo" => "0";
 requires "Moo::Role" => "0";
 requires "MooX::TaggedAttributes" => "0.07";
