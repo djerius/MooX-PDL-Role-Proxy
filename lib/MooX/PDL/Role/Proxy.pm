@@ -70,6 +70,8 @@ where C<$inplace> will be true if the operation is to take place inplace.
 
 The subroutine should return the piddle to be stored.
 
+Returns C<$self> if applied in-place, or a new object if not.
+
 =cut
 
 sub _apply_to_tagged_attrs {
@@ -151,6 +153,7 @@ sub sever {
    $new = $self->index( PIDDLE );
 
 Call L<PDL::Slices/index> on tagged attributes.  This is inplace aware.
+Returns C<$self> if applied in-place, or a new object if not.
 
 =cut
 
@@ -188,7 +191,8 @@ sub at {
 
    $obj = $self->where( $mask );
 
-Apply L<PDL::Primitive/where> to the tagged attributes.  It is inplace aware.
+Apply L<PDL::Primitive/where> to the tagged attributes.  It is in-place aware.
+Returns C<$self> if applied in-place, or a new object if not.
 
 =cut
 

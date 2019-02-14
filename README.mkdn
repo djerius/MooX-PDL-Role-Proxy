@@ -142,6 +142,8 @@ where `$inplace` will be true if the operation is to take place inplace.
 
 The subroutine should return the piddle to be stored.
 
+Returns `$self` if applied in-place, or a new object if not.
+
 ## inplace
 
     $self->inplace
@@ -173,6 +175,7 @@ Call ["sever" in PDL::Core](https://metacpan.org/pod/PDL::Core#sever) on tagged 
     $new = $self->index( PIDDLE );
 
 Call ["index" in PDL::Slices](https://metacpan.org/pod/PDL::Slices#index) on tagged attributes.  This is inplace aware.
+Returns `$self` if applied in-place, or a new object if not.
 
 ## at
 
@@ -186,7 +189,8 @@ named after the tagged attributes.
 
     $obj = $self->where( $mask );
 
-Apply ["where" in PDL::Primitive](https://metacpan.org/pod/PDL::Primitive#where) to the tagged attributes.  It is inplace aware.
+Apply ["where" in PDL::Primitive](https://metacpan.org/pod/PDL::Primitive#where) to the tagged attributes.  It is in-place aware.
+Returns `$self` if applied in-place, or a new object if not.
 
 ## \_set\_attr
 
