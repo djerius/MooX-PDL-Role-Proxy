@@ -200,6 +200,33 @@ Set the object's attributes to the values in the `%attr` hash.
 
 Returns `$self`.
 
+## qsort
+
+    $self->qsort;
+
+Sort the piddles.  This requires that the object has a `qsorti` method, which should
+return a piddle index of the elements in ascending order.
+
+For example, to designate the `radius` attribute as that which should be sorted
+on by qsort, include the `handles` option when declaring it:
+
+    has radius => (
+        is      => 'ro',
+        piddle  => 1,
+        isa     => Piddle1D,
+        handles => ['qsorti'],
+    );
+
+It is in-place aware. Returns `$self` if applied in-place, or a new object if not.
+
+## qsort\_on
+
+    $self->sort_on( $piddle );
+
+Sort on the specified `$piddle`.
+
+It is in-place aware.
+Returns `$self` if applied in-place, or a new object if not.
 # LIMITATIONS
 
 There are significant limits to this encapsulation.

@@ -42,22 +42,6 @@ has _piddles => (
     },
 );
 
-lexical_has attr_subs => (
-    is       => 'ro',
-    isa      => HashRef,
-    reader   => \( my $attr_subs ),
-    default  => sub { {} },
-);
-
-
-lexical_has 'is_inplace' => (
-    is       => 'rw',
-    clearer  => \( my $clear_inplace ),
-    reader   => \( my $is_inplace ),
-    writer   => \( my $set_inplace ),
-    default  => 0
-);
-
 
 =method _apply_to_tagged_attrs
 
@@ -233,6 +217,51 @@ sub _set_attr {
     }
 
     return $self;
+}
+
+=method qsort
+
+  $self->qsort;
+
+Sort the piddles.  This requires that the object has a C<qsorti> method, which should
+return a piddle index of the elements in ascending order.
+
+For example, to designate the C<radius> attribute as that which should be sorted
+on by qsort, include the C<handles> option when declaring it:
+
+  has radius => (
+      is      => 'ro',
+      piddle  => 1,
+      isa     => Piddle1D,
+      handles => ['qsorti'],
+  );
+
+
+It is in-place aware. Returns C<$self> if applied in-place, or a new object if not.
+
+=cut
+
+sub qsort {
+
+    $_[0]->index( $_[0]->qsorti );
+}
+
+=method qsort_on
+
+  $self->sort_on( $piddle );
+
+Sort on the specified C<$piddle>.
+
+It is in-place aware.
+Returns C<$self> if applied in-place, or a new object if not.
+
+=cut
+
+sub qsort_on {
+
+    my ( $self, $attr ) = @_;
+
+    $self->index( $attr->qsorti );
 }
 
 
