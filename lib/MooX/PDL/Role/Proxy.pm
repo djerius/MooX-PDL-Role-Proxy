@@ -21,6 +21,24 @@ use namespace::clean;
 
 use MooX::TaggedAttributes -tags => [qw( piddle )];
 
+
+lexical_has attr_subs => (
+    is      => 'ro',
+    isa     => HashRef,
+    reader  => \( my $attr_subs ),
+    default => sub { {} },
+);
+
+
+lexical_has 'is_inplace' => (
+    is      => 'rw',
+    clearer => \( my $clear_inplace ),
+    reader  => \( my $is_inplace ),
+    writer  => \( my $set_inplace ),
+    default => 0
+);
+
+
 # requires 'clone_with_piddles';
 
 =method _piddles
@@ -263,6 +281,42 @@ sub qsort_on {
 
     $self->index( $attr->qsorti );
 }
+
+=method clip_on
+
+  $events->clip_on( $piddle, $min, $max );
+
+Clip on the specified C<$piddle>, removing elements which are outside
+the bounds of [C<$min>, C<$max>).  Either bound may be C<undef> to indicate
+it should be ignore.
+
+It is in-place aware.
+Returns C<$self> if applied in-place, or a new object if not.
+
+=cut
+
+sub clip_on {
+
+    my ( $self, $attr, $min, $max ) = @_;
+
+    my $mask;
+
+    if ( defined $min ) {
+        $mask = $attr >= $min;
+        $mask &= $attr < $max
+          if defined $max;
+    }
+    elsif ( defined $max ) {
+        $mask = $attr < $max;
+    }
+    else {
+        require Carp;
+        Carp::Croak( "one of min or max must be defined\n" );
+    }
+
+    $self->where( $mask );
+}
+
 
 
 1;
