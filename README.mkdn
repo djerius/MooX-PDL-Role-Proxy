@@ -227,6 +227,18 @@ Sort on the specified `$piddle`.
 
 It is in-place aware.
 Returns `$self` if applied in-place, or a new object if not.
+
+## clip\_on
+
+    $events->clip_on( $piddle, $min, $max );
+
+Clip on the specified `$piddle`, removing elements which are outside
+the bounds of \[`$min`, `$max`).  Either bound may be `undef` to indicate
+it should be ignore.
+
+It is in-place aware.
+Returns `$self` if applied in-place, or a new object if not.
+
 # LIMITATIONS
 
 There are significant limits to this encapsulation.
