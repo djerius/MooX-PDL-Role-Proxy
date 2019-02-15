@@ -318,6 +318,25 @@ sub clip_on {
 }
 
 
+=method slice
+
+  $events->slice( $slice );
+
+Slice.  See L<PDL::Slices/slice> for more information.
+
+It is in-place aware.
+Returns C<$self> if applied in-place, or a new object if not.
+
+=cut
+
+sub slice {
+
+    my ( $self, $slice ) = @_;
+
+    return $self->_apply_to_tagged_attrs( sub { $_[0]->slice( $slice ) } );
+}
+
+
 
 1;
 
