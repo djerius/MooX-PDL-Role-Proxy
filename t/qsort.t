@@ -28,9 +28,12 @@ package Test {
 
     our $p = PDL->random( 5 )->qsorti;
 
-    sub test_obj {
+    sub test_class { 'ClassHandles' };
 
-        ClassHandles->new(
+    sub test_obj {
+        my $class = shift;
+
+        $class->test_class_new(
             p1 => $p,
             p2 => PDL->sequence( 5 ),
         );

@@ -5,14 +5,27 @@ use Test2::Tools::PDL;
 
 use Hash::Wrap;
 use Scalar::Util qw[ refaddr ];
+use Module::Load 'load';
 
 use Role::Tiny;
 
-use namespace::clean;
-
 with 'My::Test::Role::Base';
 
+use namespace::clean;
+
+requires 'test_class';
 requires 'test_obj';
+
+sub test_class { 'My::Class' }
+
+sub test_class_new {
+    my $class = shift;
+
+    load $class->test_class;
+
+    return $class->test_class->new( @_ );
+}
+
 
 sub test_inplace {
 
@@ -66,11 +79,11 @@ sub test_not_inplace {
 
 sub build_expected {
 
-    shift;
+    my $class = shift;
 
     my %data = @_;
 
-    My::Class->new(
+    $class->test_class_new(
         p1 => PDL->new( $data{p1} ),
         p2 => PDL->new( $data{p2} ),
     );

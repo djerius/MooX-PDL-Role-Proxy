@@ -16,8 +16,9 @@ package Test {
     with 'My::Test::Role::Single';
 
     sub test_obj {
+        my $class = shift;
 
-        My::Class->new(
+        $class->test_class_new(
             p1 => PDL->sequence( 5 ),
             p2 => PDL->sequence( 5 ) + 1,
         );

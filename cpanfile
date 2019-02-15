@@ -18,6 +18,7 @@ on 'test' => sub {
   requires "File::Spec" => "0";
   requires "IO::Handle" => "0";
   requires "IPC::Open3" => "0";
+  requires "Module::Load" => "0";
   requires "Moo" => "0";
   requires "PDL::Lite" => "0";
   requires "Role::Tiny" => "0";

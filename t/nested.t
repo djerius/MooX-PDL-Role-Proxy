@@ -14,20 +14,18 @@ package Test {
     use Role::Tiny::With;
     use PDL::Lite;
 
-    use My::NestedClass;
-
     with 'My::Test::Role::Nested';
 
     sub test_obj {
         my $class = shift;
 
-        My::NestedClass->new(
-            c1 => My::Class->new(
+        $class->nested_test_class_new(
+            c1 => $class->test_class_new(
 
                 p1 => $::pbase +0,     # 0 1 2 3 4
                 p2 => $::pbase + 1,    # 1 2 3 4 5
             ),
-            c2 => My::Class->new(
+            c2 => $class->test_class_new(
                 p1 => $::pbase + 3,    # 3 4 5 6 7
                 p2 => $::pbase + 2,    # 2 3 4 5 6
             ),

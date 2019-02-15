@@ -4,13 +4,39 @@ use Test2::V0;
 use Hash::Wrap;
 
 use Scalar::Util qw[ refaddr ];
+use Module::Load 'load';
 
 use Role::Tiny;
 with 'My::Test::Role::Base';
 
 use namespace::clean;
 
+requires 'test_class';
+requires 'nested_test_class';
+
 requires 'test_obj';
+
+sub test_class { 'My::Class' }
+
+sub test_class_new {
+    my $class = shift;
+
+    load $class->test_class;
+
+    return $class->test_class->new( @_ );
+}
+
+
+
+sub nested_test_class { 'My::NestedClass' }
+
+sub nested_test_class_new {
+    my $class = shift;
+
+    load $class->nested_test_class;
+
+    return $class->nested_test_class->new( @_ );
+}
 
 sub test_inplace {
 
@@ -86,12 +112,12 @@ sub build_expected {
 
     my %data = @_;
 
-    My::NestedClass->new(
-        c1 => My::Class->new(
+    $class->nested_test_class_new(
+        c1 => $class->test_class_new(
             p1 => PDL->new( $data{c1}{p1} ),
             p2 => PDL->new( $data{c1}{p2} ),
         ),
-        c2 => My::Class->new(
+        c2 => $class->test_class_new(
             p1 => PDL->new( $data{c2}{p1} ),
             p2 => PDL->new( $data{c2}{p2} ),
         ),
