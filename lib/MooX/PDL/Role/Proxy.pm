@@ -21,6 +21,10 @@ use namespace::clean;
 
 use MooX::TaggedAttributes -tags => [qw( piddle )];
 
+my $croak = sub {
+    require Carp;
+    Carp::croak( @_ );
+};
 
 lexical_has attr_subs => (
     is      => 'ro',
@@ -110,6 +114,20 @@ Returns C<$self>.
 sub inplace {
     $_[0]->$set_inplace( 1 );
     $_[0];
+}
+
+=method set_inplace
+
+  $self->set_inplace( $bool );
+
+Change the value of the inplace flag.
+
+=cut
+
+sub set_inplace {
+    2 == @_ or $croak->( "set_inplace requires two arguments" );
+    $_[0]->$set_inplace( !!$_[1] );
+    return;
 }
 
 =method is_inplace
