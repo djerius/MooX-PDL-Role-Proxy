@@ -149,6 +149,13 @@ Returns `$self` if applied in-place, or a new object if not.
     $self->inplace
 
 Indicate that the next _inplace aware_ operation should be done inplace
+Returns `$self`.
+
+## set\_inplace
+
+    $self->set_inplace( $bool );
+
+Change the value of the inplace flag.
 
 ## is\_inplace
 
@@ -160,7 +167,8 @@ Test if the next _inplace aware_ operation should  be done inplace
 
     $new = $self->copy;
 
-Create a copy of the object and its piddles.  It is exactly equivalent to
+Create a copy of the object and its piddles.  If the `inplace` flag
+is set, it returns `$self` otherwise it is exactly equivalent to
 
     $self->clone_with_piddles( map { $_ => $self->$_->copy } @{ $self->_piddles } );
 
@@ -235,6 +243,15 @@ Returns `$self` if applied in-place, or a new object if not.
 Clip on the specified `$piddle`, removing elements which are outside
 the bounds of \[`$min`, `$max`).  Either bound may be `undef` to indicate
 it should be ignore.
+
+It is in-place aware.
+Returns `$self` if applied in-place, or a new object if not.
+
+## slice
+
+    $events->slice( $slice );
+
+Slice.  See ["slice" in PDL::Slices](https://metacpan.org/pod/PDL::Slices#slice) for more information.
 
 It is in-place aware.
 Returns `$self` if applied in-place, or a new object if not.
