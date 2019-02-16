@@ -1,2 +1,4 @@
 \.build$
 \.tidyall.d$
+~$
+MooX-PDL-Role-Proxy-.*
