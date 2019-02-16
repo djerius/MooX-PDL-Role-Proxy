@@ -103,6 +103,7 @@ sub _apply_to_tagged_attrs {
   $self->inplace
 
 Indicate that the next I<inplace aware> operation should be done inplace
+Returns C<$self>.
 
 =cut
 
