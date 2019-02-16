@@ -16,12 +16,12 @@ package Test {
     with 'My::Test::Role::Single';
 
     sub test_obj {
-        my $class = shift;
+	my $class = shift;
 
-        $class->test_class_new(
-            p1 => PDL->sequence( 5 ),
-            p2 => PDL->sequence( 5 ) + 1,
-        );
+	$class->test_class_new(
+	    p1 => PDL->sequence( 5 ),
+	    p2 => PDL->sequence( 5 ) + 1,
+	);
 
     }
 }
@@ -41,6 +41,12 @@ Test->test(
     p2 => [ 1, 2, 4 ],
 );
 
+Test->test(
+    "copy",
+    sub { $_[0]->copy },
+    p1 => [ 0, 1, 2, 3, 4 ],
+    p2 => [ 1, 2, 3, 4, 5 ],
+);
 
 subtest 'at' => sub {
     my $o  = Test->test_obj;
@@ -49,31 +55,6 @@ subtest 'at' => sub {
     is( $at->p2, 4, 'p2' );
 };
 
-
-subtest 'copy' => sub {
-
-    my $o = Test->test_obj;
-
-    my $n = $o->copy;
-
-    isnt( refaddr( $n ), refaddr( $o ), "same object returned" );
-
-    isnt(
-        refaddr( $o->p1->get_dataref ),
-        refaddr( $n->p1->get_dataref ),
-        'refaddr o.p1 != n.p1'
-    );
-
-    isnt(
-        refaddr( $o->p2->get_dataref ),
-        refaddr( $n->p2->get_dataref ),
-        'refaddr o.p2 != n.p2'
-    );
-
-    pdl_is( $n->p1, $o->p1, 'o.p1: contents' );
-    pdl_is( $n->p2, $o->p2, 'o.p2: contents' );
-
-};
 
 subtest 'sever' => sub {
 

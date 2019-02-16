@@ -144,7 +144,8 @@ sub is_inplace { goto &$is_inplace }
 
   $new = $self->copy;
 
-Create a copy of the object and its piddles.  It is exactly equivalent to
+Create a copy of the object and its piddles.  If the C<inplace> flag
+is set, it returns C<$self> otherwise it is exactly equivalent to
 
   $self->clone_with_piddles( map { $_ => $self->$_->copy } @{ $self->_piddles } );
 
@@ -153,6 +154,12 @@ Create a copy of the object and its piddles.  It is exactly equivalent to
 
 sub copy {
     my $self = shift;
+
+    if ( $self->is_inplace ) {
+        $self->set_inplace( 0 );
+        return $self;
+    }
+
     return $self->clone_with_piddles( map { $_ => $self->$_->copy }
           @{ $self->_piddles } );
 }
