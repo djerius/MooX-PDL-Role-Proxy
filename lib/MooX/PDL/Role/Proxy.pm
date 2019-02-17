@@ -52,12 +52,18 @@ lexical_has 'is_inplace' => (
 This returns a list of the names of the object's attributes with
 a C<piddle> tag set.
 
+=method _clear_piddles
+
+Clear the list of attributes which have been tagged as piddles.  The
+list will be reset to the defaults when C<_piddles> is next invoked.
+
 =cut
 
 has _piddles => (
     is       => 'lazy',
     isa      => ArrayRef [Str],
     init_arg => undef,
+    clearer  => 1,
     builder  => sub {
         my $self = shift;
         [ keys %{ $self->_tags->{piddle} } ];
