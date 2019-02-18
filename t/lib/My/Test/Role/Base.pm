@@ -39,15 +39,15 @@ sub test_inplace_flat_obj {
 
     my $context = context();
 
-    is( refaddr( $new ), refaddr( $orig ), "same object returned" );
+    ref_is( $new, $orig, "same object returned" );
 
     for my $p ( 'p1', 'p2' ) {
 
         subtest $p => sub {
 
-            is(
-                refaddr( $orig->$p->get_dataref ),
-                refaddr( $new->$p->get_dataref ),
+            ref_is(
+                $orig->$p->get_dataref,
+                $new->$p->get_dataref,
                 "refaddr orig.$p == new.$p"
             );
 
@@ -67,7 +67,7 @@ sub test_not_inplace_flat_obj {
 
     my $context = context();
 
-    isnt( refaddr( $orig ), refaddr( $new ), "new object returned" );
+    ref_is_not( $orig, $new, "new object returned" );
 
     for my $p ( 'p1', 'p2' ) {
 
