@@ -98,7 +98,7 @@ sub _apply_to_tagged_attrs {
         $field => $action->( $self->$field, $inplace );
     } @{ $self->_piddles };
 
-    if ( $self->$is_inplace ) {
+    if ( $inplace ) {
         $self->$clear_inplace;
         $self->_set_attr( %attr );
         return $self;
