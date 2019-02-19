@@ -4,6 +4,15 @@ use Moo;
 use MooX::PDL::Role::Proxy;
 use PDL::Lite ();
 
+use overload '""' => 'to_string';
+use overload fallback => 1;
+
+sub to_string {
+    return join ( "\n",
+                  "p1 = " . $_[0]->p1,
+                  "p2 = " . $_[0]->p2,
+                );
+}
 
 has p1 => (
     is      => 'rwp',
