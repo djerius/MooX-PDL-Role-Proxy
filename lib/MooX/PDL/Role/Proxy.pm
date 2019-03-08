@@ -50,7 +50,9 @@ lexical_has 'is_inplace' => (
   @piddle_names = $self->_piddles;
 
 This returns a list of the names of the object's attributes with
-a C<piddle> tag set.
+a C<piddle> tag set.  The list is lazily created by the C<_build__piddles>
+method, which can be modified or overridden if required. The default
+action is to find all tagged attributes with tag C<piddle>.
 
 =method _clear_piddles
 
