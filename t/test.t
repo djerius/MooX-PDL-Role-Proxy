@@ -66,9 +66,10 @@ subtest 'sever' => sub {
 
     is( $o->p1->at( 0 ), 22, 'not severed' );
 
-    $n->sever;
+    my $c = $n->sever;
     $n->p1->set( 0, 24 );
     is( $o->p1->at( 0 ), 22, 'severed' );
+    ref_is( $c, $n, "sever returns self" );
 };
 
 

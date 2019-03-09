@@ -174,15 +174,17 @@ sub copy {
 
 =method sever
 
-  $self->sever;
+  $self = $self->sever;
 
 Call L<PDL::Core/sever> on tagged attributes.  This is done inplace.
+Returns C<$self>.
 
 =cut
 
 sub sever {
     my $self = shift;
     $self->$_->sever for @{ $self->_piddles };
+    return $self;
 }
 
 =method index
