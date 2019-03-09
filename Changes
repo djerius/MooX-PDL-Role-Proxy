@@ -2,6 +2,17 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+  [BUG FIX]
+
+    * copy() duplicates PDL's behavior by returning the original object if inplace is set.
+    * sever duplicates PDL's behavior by returning the original object
+
+  [ENHANCEMENTS]
+
+    * added qsort, qsort_on, clip_on, set_inplace
+    * hide all private attributes from namespace
+    * _piddles has clearer method so that it can be reset to defaults.
+
 0.05      2019-02-02 13:48:18-05:00 America/New_York
 
   [BUILD FIX]
