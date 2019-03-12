@@ -346,8 +346,7 @@ sub clip_on {
         $mask = $attr < $max;
     }
     else {
-        require Carp;
-        Carp::Croak( "one of min or max must be defined\n" );
+        $croak->( "one of min or max must be defined\n" );
     }
 
     $self->where( $mask );
