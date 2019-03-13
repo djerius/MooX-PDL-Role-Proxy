@@ -47,7 +47,7 @@ lexical_has 'is_inplace' => (
 
 =method _piddles
 
-  @piddle_names = $self->_piddles;
+  @piddle_names = $obj->_piddles;
 
 This returns a list of the names of the object's attributes with
 a C<piddle> tag set.  The list is lazily created by the C<_build__piddles>
@@ -75,7 +75,7 @@ has _piddles => (
 
 =method _apply_to_tagged_attrs
 
-   $self->_apply_to_tagged_attrs( \&sub );
+   $obj->_apply_to_tagged_attrs( \&sub );
 
 Execute the passed subroutine on all of the attributes tagged with the
 C<piddle> option. The subroutine will be invoked as
@@ -86,7 +86,7 @@ where C<$inplace> will be true if the operation is to take place inplace.
 
 The subroutine should return the piddle to be stored.
 
-Returns C<$self> if applied in-place, or a new object if not.
+Returns C<$obj> if applied in-place, or a new object if not.
 
 =cut
 
@@ -112,10 +112,10 @@ sub _apply_to_tagged_attrs {
 
 =method inplace
 
-  $self->inplace
+  $obj->inplace
 
 Indicate that the next I<inplace aware> operation should be done inplace
-Returns C<$self>.
+Returns C<$obj>.
 
 =cut
 
@@ -126,7 +126,7 @@ sub inplace {
 
 =method set_inplace
 
-  $self->set_inplace( $bool );
+  $obj->set_inplace( $bool );
 
 Change the value of the inplace flag.
 
@@ -140,7 +140,7 @@ sub set_inplace {
 
 =method is_inplace
 
-  $bool = $self->is_inplace;
+  $bool = $obj->is_inplace;
 
 Test if the next I<inplace aware> operation should  be done inplace
 
@@ -150,12 +150,12 @@ sub is_inplace { goto &$is_inplace }
 
 =method copy
 
-  $new = $self->copy;
+  $new = $obj->copy;
 
 Create a copy of the object and its piddles.  If the C<inplace> flag
-is set, it returns C<$self> otherwise it is exactly equivalent to
+is set, it returns C<$obj> otherwise it is exactly equivalent to
 
-  $self->clone_with_piddles( map { $_ => $self->$_->copy } @{ $self->_piddles } );
+  $obj->clone_with_piddles( map { $_ => $obj->$_->copy } @{ $obj->_piddles } );
 
 =cut
 
@@ -174,10 +174,10 @@ sub copy {
 
 =method sever
 
-  $self = $self->sever;
+  $obj = $obj->sever;
 
 Call L<PDL::Core/sever> on tagged attributes.  This is done inplace.
-Returns C<$self>.
+Returns C<$obj>.
 
 =cut
 
@@ -189,10 +189,10 @@ sub sever {
 
 =method index
 
-   $new = $self->index( PIDDLE );
+   $new = $obj->index( PIDDLE );
 
 Call L<PDL::Slices/index> on tagged attributes.  This is inplace aware.
-Returns C<$self> if applied in-place, or a new object if not.
+Returns C<$obj> if applied in-place, or a new object if not.
 
 =cut
 
@@ -213,7 +213,7 @@ sub index {
 
 =method at
 
-   $obj = $self->at( @indices );
+   $obj = $obj->at( @indices );
 
 Returns a simple object containing the results of running
 L<PDL::Core/index> on tagged attributes.  The object's attributes are
@@ -228,10 +228,10 @@ sub at {
 
 =method where
 
-   $obj = $self->where( $mask );
+   $obj = $obj->where( $mask );
 
 Apply L<PDL::Primitive/where> to the tagged attributes.  It is in-place aware.
-Returns C<$self> if applied in-place, or a new object if not.
+Returns C<$obj> if applied in-place, or a new object if not.
 
 =cut
 
@@ -245,11 +245,11 @@ sub where {
 
 =method _set_attr
 
-   $self->_set_attr( %attr )
+   $obj->_set_attr( %attr )
 
 Set the object's attributes to the values in the C<%attr> hash.
 
-Returns C<$self>.
+Returns C<$obj>.
 
 =cut
 
@@ -275,7 +275,7 @@ sub _set_attr {
 
 =method qsort
 
-  $self->qsort;
+  $obj->qsort;
 
 Sort the piddles.  This requires that the object has a C<qsorti> method, which should
 return a piddle index of the elements in ascending order.
@@ -291,7 +291,7 @@ on by qsort, include the C<handles> option when declaring it:
   );
 
 
-It is in-place aware. Returns C<$self> if applied in-place, or a new object if not.
+It is in-place aware. Returns C<$obj> if applied in-place, or a new object if not.
 
 =cut
 
@@ -302,12 +302,12 @@ sub qsort {
 
 =method qsort_on
 
-  $self->sort_on( $piddle );
+  $obj->sort_on( $piddle );
 
 Sort on the specified C<$piddle>.
 
 It is in-place aware.
-Returns C<$self> if applied in-place, or a new object if not.
+Returns C<$obj> if applied in-place, or a new object if not.
 
 =cut
 
@@ -320,14 +320,15 @@ sub qsort_on {
 
 =method clip_on
 
-  $events->clip_on( $piddle, $min, $max );
+  $obj->clip_on( $piddle, $min, $max );
 
 Clip on the specified C<$piddle>, removing elements which are outside
 the bounds of [C<$min>, C<$max>).  Either bound may be C<undef> to indicate
 it should be ignore.
 
 It is in-place aware.
-Returns C<$self> if applied in-place, or a new object if not.
+
+Returns C<$obj> if applied in-place, or a new object if not.
 
 =cut
 
@@ -355,12 +356,12 @@ sub clip_on {
 
 =method slice
 
-  $events->slice( $slice );
+  $obj->slice( $slice );
 
 Slice.  See L<PDL::Slices/slice> for more information.
 
 It is in-place aware.
-Returns C<$self> if applied in-place, or a new object if not.
+Returns C<$obj> if applied in-place, or a new object if not.
 
 =cut
 
