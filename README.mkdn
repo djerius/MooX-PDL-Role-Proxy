@@ -127,7 +127,14 @@ contained object appropriately.
     @piddle_names = $self->_piddles;
 
 This returns a list of the names of the object's attributes with
-a `piddle` tag set.
+a `piddle` tag set.  The list is lazily created by the `_build__piddles`
+method, which can be modified or overridden if required. The default
+action is to find all tagged attributes with tag `piddle`.
+
+## \_clear\_piddles
+
+Clear the list of attributes which have been tagged as piddles.  The
+list will be reset to the defaults when `_piddles` is next invoked.
 
 ## \_apply\_to\_tagged\_attrs
 
@@ -174,9 +181,10 @@ is set, it returns `$self` otherwise it is exactly equivalent to
 
 ## sever
 
-    $self->sever;
+    $self = $self->sever;
 
 Call ["sever" in PDL::Core](https://metacpan.org/pod/PDL::Core#sever) on tagged attributes.  This is done inplace.
+Returns `$self`.
 
 ## index
 

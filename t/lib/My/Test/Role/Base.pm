@@ -45,11 +45,8 @@ sub test_inplace_flat_obj {
 
         subtest $p => sub {
 
-            ref_is(
-                $orig->$p->get_dataref,
-                $new->$p->get_dataref,
-                "refaddr orig.$p == new.$p"
-            );
+            ref_is( $orig->$p->get_dataref,
+                $new->$p->get_dataref, "refaddr orig.$p == new.$p" );
 
             pdl_is( $orig->$p, $expected->$p, "orig.$p: contents" );
         };

@@ -18,8 +18,8 @@ package Test {
         my $class = shift;
 
         $class->test_class_new(
-            p1 => PDL->new([   0, 1, 2, 3, 4, 5, 7 ]),
-            p2 => PDL->new([  -1, 1, 2, 3, 4, 5, 6 ]),
+            p1 => PDL->new( [ 0,  1, 2, 3, 4, 5, 7 ] ),
+            p2 => PDL->new( [ -1, 1, 2, 3, 4, 5, 6 ] ),
         );
 
     }
@@ -42,7 +42,7 @@ Test->test(
 Test->test(
     "clip_on (undef,max]",
     sub { $_[0]->clip_on( $_[0]->p1, undef, 5 ) },
-    p1 => [  0, 1, 2, 3, 4, ],
+    p1 => [ 0,  1, 2, 3, 4, ],
     p2 => [ -1, 1, 2, 3, 4, ],
 );
 

@@ -28,7 +28,7 @@ package Test {
 
     our $p = PDL->random( 5 )->qsorti;
 
-    sub test_class { 'ClassHandles' };
+    sub test_class { 'ClassHandles' }
 
     sub test_obj {
         my $class = shift;
@@ -57,7 +57,11 @@ Test->test(
 
 
 my $obj = My::Class->new();
-like( dies { $obj->qsort }, qr/can't locate object method.*qsorti/i, "class doesn't handle qsorti" );
+like(
+    dies { $obj->qsort },
+    qr/can't locate object method.*qsorti/i,
+    "class doesn't handle qsorti"
+);
 
 
 done_testing;

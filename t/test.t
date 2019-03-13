@@ -16,12 +16,12 @@ package Test {
     with 'My::Test::Role::Single';
 
     sub test_obj {
-	my $class = shift;
+        my $class = shift;
 
-	$class->test_class_new(
-	    p1 => PDL->sequence( 5 ),
-	    p2 => PDL->sequence( 5 ) + 1,
-	);
+        $class->test_class_new(
+            p1 => PDL->sequence( 5 ),
+            p2 => PDL->sequence( 5 ) + 1,
+        );
 
     }
 }

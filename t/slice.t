@@ -18,8 +18,8 @@ package Test {
         my $class = shift;
 
         $class->test_class_new(
-            p1 => PDL->new([   0, 1, 2, 3, 4, 5, 7 ]),
-            p2 => PDL->new([  -1, 1, 2, 3, 4, 5, 6 ]),
+            p1 => PDL->new( [ 0,  1, 2, 3, 4, 5, 7 ] ),
+            p2 => PDL->new( [ -1, 1, 2, 3, 4, 5, 6 ] ),
         );
 
     }
@@ -27,7 +27,7 @@ package Test {
 
 Test->test(
     "[2,6]",
-    sub { $_[0]->slice( [2,6] ) },
+    sub { $_[0]->slice( [ 2, 6 ] ) },
     p1 => [ 2, 3, 4, 5, 7 ],
     p2 => [ 2, 3, 4, 5, 6 ],
 );
