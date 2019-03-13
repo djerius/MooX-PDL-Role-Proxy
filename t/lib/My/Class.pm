@@ -15,12 +15,19 @@ has p1 => (
     is      => 'rwp',
     default => sub { PDL->null },
     piddle  => 1,
+    trigger => sub { $_[0]->triggered(1) },
 );
 
 has p2 => (
     is      => 'rwp',
     default => sub { PDL->null },
     piddle  => 1,
+);
+
+has triggered => (
+    is      => 'rw',
+    clearer => 1,
+    default => 0,
 );
 
 sub clone_with_piddles {

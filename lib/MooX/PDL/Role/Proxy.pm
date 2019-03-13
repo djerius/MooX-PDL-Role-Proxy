@@ -19,6 +19,11 @@ use Lexical::Accessor;
 
 use namespace::clean;
 
+use constant {
+    INPLACE_SET   => 1,
+    INPLACE_STORE => 2,
+};
+
 use MooX::TaggedAttributes -tags => [qw( piddle )];
 
 my $croak = sub {
@@ -102,7 +107,21 @@ sub _apply_to_tagged_attrs {
 
     if ( $inplace ) {
         $self->$clear_inplace;
-        $self->_set_attr( %attr );
+
+        if ( $inplace == INPLACE_SET ) {
+            $self->_set_attr( %attr );
+        }
+
+        elsif ( $inplace == INPLACE_STORE ) {
+            for my $attr ( keys %attr ) {
+                ( my $pdl = $self->$attr ) .= $attr{$attr};
+            }
+        }
+
+        else {
+            $croak->( "unrecognized inplace flag value: $inplace\n" );
+        }
+
         return $self;
     }
 
@@ -112,29 +131,100 @@ sub _apply_to_tagged_attrs {
 
 =method inplace
 
-  $obj->inplace
+  $obj->inplace( ?$how )
 
-Indicate that the next I<inplace aware> operation should be done inplace
+Indicate that the next I<inplace aware> operation should be done inplace.
+
+An optional argument indicating how the piddles should be updated may be
+passed (see L</set_inplace> for more information).  This API differs from
+from the L<inplace|PDL::Core/inplace> method.
+
+It defaults to using the attributes' accessors to store the results,
+which will cause triggers, etc. to be called.
+
 Returns C<$obj>.
+See also L</inplace_direct> and L</inplace_accessor>.
 
 =cut
 
 sub inplace {
-    $_[0]->$set_inplace( 1 );
+    $_[0]->$set_inplace( @_ > 1 ? $_[1] : INPLACE_SET );
     $_[0];
 }
 
+
+=method inplace_store
+
+  $obj->inplace_store
+
+Indicate that the next I<inplace aware> operation should be done
+inplace.  Piddles are changed inplace via the C<.=> operator, avoiding
+any side-effects caused by using the attributes' accessors.
+
+It is equivalent to calling
+
+  $obj->set_inplace( MooX::PDL::Role::Proxy::INPLACE_STORE );
+
+Returns C<$obj>.
+See also L</inplace> and L</inplace_accessor>.
+
+=cut
+
+sub inplace_store {
+    $_[0]->$set_inplace( INPLACE_STORE );
+    $_[0];
+}
+
+=method inplace_set
+
+  $obj->inplace_set
+
+Indicate that the next I<inplace aware> operation should be done inplace.
+The object level attribute accessors will be used to store the results (which
+may be the same piddle).  This will cause L<Moo> triggers, etc to be
+called.
+
+It is equivalent to calling
+
+  $obj->set_inplace( MooX::PDL::Role::Proxy::INPLACE_SET );
+
+Returns C<$obj>.
+See also L</inplace_direct> and L</inplace>.
+
+=cut
+
+sub inplace_set {
+    $_[0]->$set_inplace( INPLACE_SET );
+    $_[0];
+}
+
+
 =method set_inplace
 
-  $obj->set_inplace( $bool );
+  $obj->set_inplace( $value );
 
-Change the value of the inplace flag.
+Change the value of the inplace flag.  Accepted values are
+
+=over
+
+=item MooX::PDL::Role::Proxy::INPLACE_SET
+
+Use the object level attribute accessors to store the results (which
+may be the same piddle).  This will cause L<Moo> triggers, etc to be
+called.
+
+=item MooX::PDL::Role::Proxy::INPLACE_STORE
+
+Store the results directly in the existing piddle using the C<.=> operator.
+
+=back
 
 =cut
 
 sub set_inplace {
     2 == @_ or $croak->( "set_inplace requires two arguments" );
-    $_[0]->$set_inplace( !!$_[1] );
+    $_[1] >= 0
+      && $_[0]->$set_inplace( $_[1] );
     return;
 }
 
