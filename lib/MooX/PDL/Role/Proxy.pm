@@ -28,7 +28,7 @@ use MooX::TaggedAttributes -tags => [qw( piddle )];
 
 my $croak = sub {
     require Carp;
-    Carp::croak( @_ );
+    goto \&Carp::croak;
 };
 
 lexical_has attr_subs => (
