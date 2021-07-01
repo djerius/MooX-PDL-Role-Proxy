@@ -114,7 +114,11 @@ sub _apply_to_tagged_attrs {
 
         elsif ( $inplace == INPLACE_STORE ) {
             for my $attr ( keys %attr ) {
-                ( my $pdl = $self->$attr ) .= $attr{$attr};
+                # $attr{$attr} may be linked to $self->$attr,
+                # so if we reshape $self->$attr, it really
+                # messes up $attr{$attr}.  sever it to be sure.
+                my $pdl = $attr{$attr}->sever;
+                ( my $tmp = $self->$attr->reshape( $pdl->dims ) ) .= $pdl;
             }
         }
 

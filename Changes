@@ -7,7 +7,7 @@ Revision history for {{$dist->name}}
 
     * copy() duplicates PDL's behavior by returning the original object if inplace is set.
 
-    * sever duplicates PDL's behavior by returning the original object
+    * sever() duplicates PDL's behavior by returning the original object
 
   [ENHANCEMENTS]
 
