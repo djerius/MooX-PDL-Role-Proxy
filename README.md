@@ -4,7 +4,7 @@ MooX::PDL::Role::Proxy - treat a container of piddles as if it were a piddle
 
 # VERSION
 
-version 0.06
+version 0.07
 
 # SYNOPSIS
 
