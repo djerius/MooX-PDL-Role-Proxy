@@ -10,10 +10,10 @@ package Test {
 
     use Test2::V0;
     use Role::Tiny::With;
-    use My::Class;
+    use My::Test::Role;
     use PDL::Lite;
 
-    with 'My::Test::Role::Single';
+    with My::Test::Role::Single();
 
     sub test_obj {
         my $class = shift;
