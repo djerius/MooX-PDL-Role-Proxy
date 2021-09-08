@@ -4,7 +4,7 @@ MooX::PDL::Role::Proxy - treat a container of ndarrays (piddles) as if it were a
 
 # VERSION
 
-version 0.07
+version 0.08
 
 # SYNOPSIS
 
