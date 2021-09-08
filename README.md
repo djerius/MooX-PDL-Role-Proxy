@@ -99,17 +99,36 @@ operators should be given a `ndarray` option, e.g.
 (Treat the option value as an identifier for the group of ndarrays
 which should be operated on, rather than as a boolean).
 
-To support non-inplace operations, the class must provide a
-`clone_with_ndarrays` method with the following signature:
+## Results of Operations
 
-    sub clone_with_ndarrays ( $self, %ndarrays )
+The results of operations may either be stored ["In Place"](#in-place) or returned
+in ["Cloned Objects"](#cloned-objects).  By default, operations return cloned objects.
 
-It should clone `$self` and assign the values in `%ndarrays`
-to the attributes named by its keys.  To assist with the latter
-operation, see the provided ["\_set\_attrs"](#_set_attrs) method.
+### In Place
+
+Use one of the following methods, ["inplace"](#inplace), ["inplace\_store"](#inplace_store), ["inplace\_set"](#inplace_set).
+to indicate that the next in-place aware operation should be performed in-place.
+After the operation is completed, the in-place flag will be reset.
 
 To support inplace operations, attributes tagged with the `ndarray`
 option must have write accessors.  They may be public or private.
+
+### Cloned Objects
+
+The class must provide a a clone method.  If cloning an object
+requires extra arguments, use ["\_set\_clone\_args"](#_set_clone_args) and
+["\_clear\_clone\_args"](#_clear_clone_args) to set or reset the arguments.
+
+If the class provides the [\_clone\_with\_ndarrays](https://metacpan.org/pod/_clone_with_ndarrays) method, then it will be called as
+
+    $object->_clone_with_ndarrays( \%ndarrays, ?$arg);
+
+where `$arg` will only be passed if ["\_set\_clone\_args"](#_set_clone_args) was called.
+
+For backwards compatibility, the [clone\_with\_piddles](https://metacpan.org/pod/clone_with_piddles) method is supported, but
+it is not possible to pass in extra arguments. It will be called as
+
+    $object->clone_with_piddles ( %ndarrays );
 
 ## Nested Proxy Objects
 
@@ -141,7 +160,7 @@ list will be reset to the defaults when `_ndarrays` is next invoked.
 
     $obj->_apply_to_tagged_attrs( \&sub );
 
-Execute the passed subroutine on all of the attributes tagged with 
+Execute the passed subroutine on all of the attributes tagged with
 `ndarray` (or `piddle`). The subroutine will be invoked as
 
     sub->( $attribute, $inplace )
@@ -197,7 +216,7 @@ It is equivalent to calling
     $obj->set_inplace( MooX::PDL::Role::Proxy::INPLACE_SET );
 
 Returns `$obj`.
-See also ["inplace\_direct"](#inplace_direct) and ["inplace"](#inplace).
+See also ["inplace\_store"](#inplace_store) and ["inplace"](#inplace).
 
 ## set\_inplace
 
@@ -258,6 +277,19 @@ named after the tagged attributes.
 
 Apply ["where" in PDL::Primitive](https://metacpan.org/pod/PDL::Primitive#where) to the tagged attributes.  It is in-place aware.
 Returns `$obj` if applied in-place, or a new object if not.
+
+## \_set\_clone\_args
+
+    $obj->_set_clone_args( $args );
+
+Pass the given value to the `_clone_with_args_ndarrays` method when
+an object must be implicitly cloned.
+
+## \_clear\_clone\_args
+
+    $obj->_clear_clone_args;
+
+Clear out any value set by [\_set\_clone\_args](https://metacpan.org/pod/_set_clone_args).
 
 ## \_set\_attr
 

@@ -2,7 +2,7 @@ package MooX::PDL::Role::Proxy;
 
 # ABSTRACT: treat a container of ndarrays (piddles) as if it were an ndarray (piddle)
 
-use 5.010;
+use v5.10;
 use strict;
 use warnings;
 
@@ -133,7 +133,7 @@ has _ndarrays => (
 
    $obj->_apply_to_tagged_attrs( \&sub );
 
-Execute the passed subroutine on all of the attributes tagged with 
+Execute the passed subroutine on all of the attributes tagged with
 C<ndarray> (or C<piddle>). The subroutine will be invoked as
 
    sub->( $attribute, $inplace )
@@ -711,4 +711,3 @@ The object must be able to be cloned relatively easily, so that
 non-inplace operations can create copies of the original object.
 
 =back
-
