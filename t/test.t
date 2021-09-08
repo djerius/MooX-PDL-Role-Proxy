@@ -22,7 +22,6 @@ package Test {
             p1 => PDL->sequence( 5 ),
             p2 => PDL->sequence( 5 ) + 1,
         );
-
     }
 }
 
@@ -72,5 +71,20 @@ subtest 'sever' => sub {
     ref_is( $c, $n, "sever returns self" );
 };
 
+subtest 'clone with args' => sub {
+
+    my $o = Test->test_obj;
+    $o->_set_clone_args( { a1 => 3 } );
+
+    my $c = $o->copy;
+
+    if ( My::Test::NAME eq 'NDarray' ) {
+        ok( $c->has_a1 && $c->a1 == 3 );
+    }
+    else {
+        ok( ! $c->has_a1 );
+    }
+
+};
 
 done_testing;

@@ -13,9 +13,9 @@ has c2 => ( is => 'rwp', ndarray => 1 );
 
 with 'My::Class::Nested';
 
-sub clone_with_ndarrays {
-    my ( $self, %attr ) = @_;
-    $self->new->_set_attr( %attr );
+sub _clone_with_ndarrays {
+    my ( $self, $attr, $arg ) = @_;
+    $self->new->_set_attr( %$attr );
 }
 
 1;

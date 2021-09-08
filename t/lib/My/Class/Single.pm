@@ -13,12 +13,16 @@ sub to_string {
 has '+p1' => (
     is      => 'rwp',
     default => sub { PDL->null },
-    trigger => sub { $_[0]->triggered(1) },
 );
 
 has '+p2' => (
     is      => 'rwp',
     default => sub { PDL->null },
+);
+
+has a1 => (
+    is      => 'ro',
+    predicate => 1,
 );
 
 has triggered => (

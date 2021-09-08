@@ -38,14 +38,27 @@ my $can_either = sub {
     }
 };
 
-lexical_has clone_func => (
-  is        => 'lazy',
-  weak_ref  => 1,
-  reader    => \( my $get_clone_func ),
-  writer    => \( my $set_clone_func ),
-  default   => sub { $can_either->( $_[0], 'clone_with_ndarrays', 'clone_with_piddles' ) },
+lexical_has clone_v2 => (
+    is       => 'lazy',
+    weak_ref => 1,
+    reader   => \( my $clone_v2 ),
+    default  => sub { $_[0]->can( '_clone_with_ndarrays' ) },
 );
 
+lexical_has clone_v1 => (
+    is       => 'lazy',
+    weak_ref => 1,
+    reader   => \( my $clone_v1 ),
+    default  => sub { $_[0]->can( 'clone_with_piddles' ) },
+);
+
+lexical_has clone_args => (
+    is        => 'rw',
+    reader    => \( my $get_clone_args ),
+    clearer   => \( my $clear_clone_args ),
+    writer    => \( my $set_clone_args ),
+    predicate => \( my $has_clone_args ),
+);
 
 lexical_has attr_subs => (
     is      => 'ro',
@@ -62,12 +75,20 @@ lexical_has 'is_inplace' => (
     default => 0
 );
 
+
 my $clone = sub {
     my ( $self, $attrs ) = @_;
-    my $func = $self->$get_clone_func;
-    $self->$func( %$attrs );
-};
 
+    if ( my $func = $self->$clone_v2 ) {
+        $self->$func( $attrs, $self->$has_clone_args ? $self->$get_clone_args : () );
+    }
+    elsif ( $func = $self->$clone_v1 ) {
+        $self->$func( %$attrs );
+    }
+    else {
+        $croak->( "couldn't find clone method for class '@{[ ref $self ]}'" );
+    }
+};
 
 =method _ndarrays
 
@@ -96,13 +117,16 @@ has _ndarrays => (
         my $tags = $self->_tags->tag_hash;
         # make backwards compatible with 'piddle'.  the returned hash
         # is locked, so only access keys known to exist
-        [ map { keys %{ $tags->{$_}} } grep { /^ndarray|piddle$/ }  keys %$tags ];
+        [
+            map  { keys %{ $tags->{$_} } }
+            grep { /^ndarray|piddle$/ } keys %$tags
+        ];
     },
 );
 
 # alias for backwards compatibility
-*_piddles = \&_ndarrays;
-*_clear_piddles =\&_clear_ndarrays;
+*_piddles       = \&_ndarrays;
+*_clear_piddles = \&_clear_ndarrays;
 *_build_piddles = \&_build__ndarrays;
 
 =method _apply_to_tagged_attrs
@@ -220,7 +244,7 @@ It is equivalent to calling
   $obj->set_inplace( MooX::PDL::Role::Proxy::INPLACE_SET );
 
 Returns C<$obj>.
-See also L</inplace_direct> and L</inplace>.
+See also L</inplace_store> and L</inplace>.
 
 =cut
 
@@ -362,6 +386,31 @@ sub where {
 }
 
 
+=method _set_clone_args
+
+   $obj->_set_clone_args( $args );
+
+Pass the given value to the C<_clone_with_args_ndarrays> method when
+an object must be implicitly cloned.
+
+=cut
+
+sub _set_clone_args {
+    $_[0]->$set_clone_args( $_[1] );
+}
+
+
+=method _clear_clone_args
+
+   $obj->_clear_clone_args;
+
+Clear out any value set by L<_set_clone_args>.
+
+=cut
+
+sub _clear_clone_args {
+    $_[0]->$clear_clone_args;
+}
 
 =method _set_attr
 
@@ -599,17 +648,36 @@ operators should be given a C<ndarray> option, e.g.
 (Treat the option value as an identifier for the group of ndarrays
 which should be operated on, rather than as a boolean).
 
-To support non-inplace operations, the class must provide a
-C<clone_with_ndarrays> method with the following signature:
+=head2 Results of Operations
 
-   sub clone_with_ndarrays ( $self, %ndarrays )
+The results of operations may either be stored L</In Place> or returned
+in L</Cloned Objects>.  By default, operations return cloned objects.
 
-It should clone C<$self> and assign the values in C<%ndarrays>
-to the attributes named by its keys.  To assist with the latter
-operation, see the provided L</_set_attrs> method.
+=head3 In Place
+
+Use one of the following methods, L</inplace>, L</inplace_store>, L</inplace_set>.
+to indicate that the next in-place aware operation should be performed in-place.
+After the operation is completed, the in-place flag will be reset.
 
 To support inplace operations, attributes tagged with the C<ndarray>
 option must have write accessors.  They may be public or private.
+
+=head3 Cloned Objects
+
+The class must provide a a clone method.  If cloning an object
+requires extra arguments, use L</_set_clone_args> and
+L</_clear_clone_args> to set or reset the arguments.
+
+If the class provides the L<_clone_with_ndarrays> method, then it will be called as
+
+   $object->_clone_with_ndarrays( \%ndarrays, ?$arg);
+
+where C<$arg> will only be passed if L</_set_clone_args> was called.
+
+For backwards compatibility, the L<clone_with_piddles> method is supported, but
+it is not possible to pass in extra arguments. It will be called as
+
+   $object->clone_with_piddles ( %ndarrays );
 
 =head2 Nested Proxy Objects
 
